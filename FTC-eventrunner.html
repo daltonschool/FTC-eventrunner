@@ -8,7 +8,10 @@
 <body>
     {{> loginButtons}}
     <h1>Welcome to Meteor! </h1>
-    {{> hello}}
+    <!--{{> hello}}-->
+    {{> csvInput}}
+
+    {{> tbl}}
 
 
 
@@ -16,9 +19,31 @@
 
 
 
+<template name="tbl">
+    <table>
+        <tr class="hdr">
+            {{#each labels}}
+            <td>{{label}}</td>
+            {{/each}}
+        </tr>
+        {{#each rows}}
+        <tr>
+            {{#each elements}}
+            <td>
+                {{element}}
+            </td>
+            {{/each}}
+        </tr>
+        {{/each}}
+    </table>
+</template>
+
 <template name="hello">
     <button>Click Me</button>
     <p>You've pressed the button {{counter}} times.</p>
+</template>
+
+<template name="csvInput">
     <form class="new-task">
         <textarea name="text"></textarea>
         <input type="submit" name="hi">
