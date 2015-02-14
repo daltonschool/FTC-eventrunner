@@ -1,4 +1,4 @@
-
+Schedules = new Mongo.Collection("schedules");
 
 if (Meteor.isClient) {
     // counter starts at 0
@@ -6,6 +6,55 @@ if (Meteor.isClient) {
 
     Session.setDefault('table', null); // This variable holds the table once the data's entered.
     Session.setDefault('labels', ['Number', 'RED 1', 'RED 2', 'BLUE 1', 'BLUE 2']); // Headers I want shown. Can be changed.
+    Session.setDefault('eventID', "1");
+
+    Template.login.events({
+        "submit .loginForm": function(event) {
+            var username = event.target.username.value;
+            var password = event.target.password.value;
+            console.log("BUTTON HIT");
+            Meteor.loginWithPassword(username, password, function(error) {
+                if (error) {
+                    Session.set("warnings", "Invalid Username or Password.");
+                } else {
+                    Session.set("warnings", "");
+                }
+            });
+            return false;
+        }
+    });
+    Template.login.helpers({
+        "warnings": function() {
+            return Session.get("warnings") || "";
+        }
+    });
+
+    Template.signup.events({
+        "submit #register-form": function(event) {
+            var username = event.target.signupName.value;
+            var password = event.target.signupPass.value;
+            var confirm  = event.target.signupConf.value;
+
+            if (password === confirm) {
+                Accounts.createUser({username: username, password: password}, function(err) {
+                    if (err) {
+                        Session.set("warnings", "user already exists.")
+                    } else {
+                        $('.signup').modal('hide');
+                    }
+                })
+            } else {
+                Session.set("warnings", "you did not confirm your password.");
+            }
+
+            return false;
+        }
+    });
+    Template.signup.helpers({
+        "warnings": function() {
+            return Session.get("warnings") || "";
+        }
+    });
 
     Template.tbl.helpers({
         // renders the labels for the match table
@@ -19,7 +68,7 @@ if (Meteor.isClient) {
         },
         // renders rows for the match table
         rows: function() {
-            var d = Session.get('table');
+            var d = Schedules.findOne({event: Session.get("eventID")}).sched;
             var labels = Session.get('labels');
             var rows = [];
             for(var i = 0; i < d['Number'].length; i++) {
@@ -32,7 +81,17 @@ if (Meteor.isClient) {
             return rows;
         }
     });
-
+    Template.csvInput.events({
+        'submit .new-task': function(event) {
+            var text = event.target.text.value;
+            Session.set('table', parseCSV(text));
+            Schedules.insert({
+                event: Session.get("eventID"),
+                sched: Session.get('table')
+            });
+            return false;
+        }
+    });
     Template.hello.helpers({
         counter: function () {
             if (Meteor.userId())
@@ -50,14 +109,6 @@ if (Meteor.isClient) {
             else {
                 Session.set('counter', Session.get('counter') + 1);
             }
-        }
-    });
-
-    Template.csvInput.events({
-        'submit .new-task': function(event) {
-            var text = event.target.text.value;
-            Session.set('table', parseCSV(text));
-            return false;
         }
     });
 
