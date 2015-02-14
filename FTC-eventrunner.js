@@ -6,10 +6,10 @@ if (Meteor.isClient) {
 
     Session.setDefault('table', null); // This variable holds the table once the data's entered.
     Session.setDefault('labels', ['Number', 'RED 1', 'RED 2', 'BLUE 1', 'BLUE 2']); // Headers I want shown. Can be changed.
-    Session.setDefault('eventID', "1");
+    Session.setDefault('eventID', "1"); // This will be variable for multiple events eventually, but now we're only doing one event.
 
     Template.login.events({
-        "submit .loginForm": function(event) {
+        "submit .loginForm": function(event) { // custom login form
             var username = event.target.username.value;
             var password = event.target.password.value;
             console.log("BUTTON HIT");
@@ -23,7 +23,7 @@ if (Meteor.isClient) {
             return false;
         }
     });
-    Template.login.helpers({
+    Template.login.helpers({ // error label for login/signup
         "warnings": function() {
             return Session.get("warnings") || "";
         }
@@ -35,7 +35,7 @@ if (Meteor.isClient) {
             var password = event.target.signupPass.value;
             var confirm  = event.target.signupConf.value;
 
-            if (password === confirm) {
+            if (password === confirm) { // if they typed the password correctly twice
                 Accounts.createUser({username: username, password: password}, function(err) {
                     if (err) {
                         Session.set("warnings", "user already exists.")
@@ -84,34 +84,21 @@ if (Meteor.isClient) {
     Template.csvInput.events({
         'submit .new-task': function(event) {
             var text = event.target.text.value;
-            Session.set('table', parseCSV(text));
-            Schedules.insert({
-                event: Session.get("eventID"),
-                sched: Session.get('table')
-            });
+            Session.set('table', parseCSV(text)); // parse
+
+            if (Schedules.find({event: Session.get("eventID")}).count < 1) { // if there isn't any schedule with the ID
+                Schedules.insert({ // create a new document
+                    event: Session.get("eventID"),
+                    sched: Session.get('table')
+                });
+            } else { // update an existing document.
+                Schedules.update({event: Session.get("eventID")}, {$set: Session.get('table')});
+            }
+
+
             return false;
         }
     });
-    Template.hello.helpers({
-        counter: function () {
-            if (Meteor.userId())
-                return Meteor.users.findOne({_id: Meteor.userId()}).profile.counter;
-            else
-                return Session.get('counter');
-        }
-    });
-    Template.hello.events({
-        'click button': function () {
-            // increment the counter when button is clicked
-            if (Meteor.userId()) {
-                Meteor.users.update({_id: Meteor.userId()}, {$inc: {'profile.counter': 1}});
-            }
-            else {
-                Session.set('counter', Session.get('counter') + 1);
-            }
-        }
-    });
-
     Accounts.ui.config({
         passwordSignupFields: "USERNAME_ONLY"
     });
