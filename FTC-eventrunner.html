@@ -34,11 +34,11 @@
 
     <row>
         <div class="col-sm-4">
-            {{> tbl}} //
+            {{> tbl}}
         </div>
     </row>
 
-    {{#if currentUser}}
+    {{#if isInRole 'admin'}}
         {{> csvInput}}
     {{/if}}
 
@@ -61,8 +61,6 @@
         <a class="btn btn-warning" onclick="Session.set('warnings', ''); $('.signup').modal();">Sign up</a>
     </form>
 </template>
-
-
 <template name="signup">
     <!-- Signup modal -->
     <div class="modal fade signup" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -105,7 +103,6 @@
         </div>
     </div>
 </template>
-
 <template name="tbl">
     <table class="table table-striped">
         <tr>
@@ -120,11 +117,15 @@
                 <center>{{element}}</center>
             </td>
             {{/each}}
+            {{#if isInRole 'admin' 'queuer'}}
+                <td>
+                    <button class="btn btn-default queuer" id="{{indx}}">Queue</button>
+                </td>
+            {{/if}}
         </tr>
         {{/each}}
     </table>
 </template>
-
 <template name="csvInput">
     <form class="new-task">
         <textarea name="text"></textarea>

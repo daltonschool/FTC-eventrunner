@@ -12,7 +12,6 @@ if (Meteor.isClient) {
         "submit .loginForm": function(event) { // custom login form
             var username = event.target.username.value;
             var password = event.target.password.value;
-            console.log("BUTTON HIT");
             Meteor.loginWithPassword(username, password, function(error) {
                 if (error) {
                     Session.set("warnings", "Invalid Username or Password.");
@@ -56,6 +55,11 @@ if (Meteor.isClient) {
         }
     });
 
+
+    Template.body.helpers({
+
+    });
+
     Template.tbl.helpers({
         // renders the labels for the match table
         labels: function() {
@@ -72,7 +76,7 @@ if (Meteor.isClient) {
             var labels = Session.get('labels');
             var rows = [];
             for(var i = 0; i < d['Number'].length; i++) {
-                var d2 = {elements: []};
+                var d2 = {elements: [], indx: i};
                 for (var j = 0; j < labels.length; j++) {
                     d2.elements.push({element: d[labels[j]][i]});
                 }
@@ -81,9 +85,23 @@ if (Meteor.isClient) {
             return rows;
         }
     });
+
+    Template.tbl.events({
+        "click .queuer": function(event) {
+            var indx = event.target.id;
+            var row = Schedules.findOne({event: Session.get("eventID")}).sched;
+
+            var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
+
+            alert(JSON.stringify(d));
+        }
+    });
+
     Template.csvInput.events({
         'submit .new-task': function(event) {
             var text = event.target.text.value;
+            console.log("click!");
+            event.preventDefault();
             Session.set('table', parseCSV(text)); // parse
 
             if (Schedules.find({event: Session.get("eventID")}).count < 1) { // if there isn't any schedule with the ID
@@ -98,9 +116,6 @@ if (Meteor.isClient) {
 
             return false;
         }
-    });
-    Accounts.ui.config({
-        passwordSignupFields: "USERNAME_ONLY"
     });
 }
 
@@ -121,5 +136,9 @@ function parseCSV(s) {
 if (Meteor.isServer) {
     Meteor.startup(function () {
     // code to run on server at startup
+        Roles.addUsersToRoles("PvN4RH8zj6YtAZizX", ['admin']);
     });
+    Meteor.publish(null, function (){
+        return Meteor.roles.find({})
+    })
 }
