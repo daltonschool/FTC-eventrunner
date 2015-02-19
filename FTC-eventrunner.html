@@ -33,14 +33,21 @@
     <center><h1>Welcome to the Dalton Qualifier! </h1></center>
 
     <row>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
+            {{#if isInRole 'admin'}}
+                {{> csvInput}}
+            {{/if}}
+        </div>
+        <div class="col-sm-6">
             {{> tbl}}
+        </div>
+        <div class="col-sm-3">
+            {{#if currentUser}}
+                {{> followTeam}}
+            {{/if}}
         </div>
     </row>
 
-    {{#if isInRole 'admin'}}
-        {{> csvInput}}
-    {{/if}}
 
     {{> signup}}
 </body>
@@ -48,8 +55,10 @@
 
 <template name="followTeam">
     <form class="newNumber">
-        <input type="number" name="team">
-        <input type="submit">
+        <h3>Follow A Team</h3>
+        <h6>Recieve SMS alerts when a team needs to queue, and the results of their matches.</h6>
+        <input type="tel" name="team">
+        <input type="submit" class="btn btn-primary btn-xs">
     </form>
 </template>
 
@@ -80,7 +89,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                    <h4 class="modal-title" id="myModalLabel">Sign Up</h4>
                 </div>
                 <div class="modal-body">
                     <center>
@@ -116,6 +125,7 @@
     </div>
 </template>
 <template name="tbl">
+    <center><h3>Match Schedule</h3></center>
     <table class="table table-striped">
         <tr>
             {{#each labels}}
