@@ -1,4 +1,26 @@
 Schedules = new Mongo.Collection("schedules");
+Teams = new Mongo.Collection('teams');
+
+
+Meteor.methods({
+    updateSchedule: function(obj, id) {
+        if (!Roles.userIsInRole(Meteor.userId(), ["admin"])) {
+            throw new Meteor.Error("not-authorized");
+        }
+        else {
+            if (Schedules.findOne({event: id})) { // if a schedule exists, update it.
+                Schedules.update({event: id}, {$set: {'sched': obj}});
+            }
+            else {
+                Schedules.insert({ // create a new document
+                    event: id,
+                    sched: obj
+                });
+            }
+        }
+    }
+});
+
 
 if (Meteor.isClient) {
     // counter starts at 0
@@ -104,15 +126,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             Session.set('table', parseCSV(text)); // parse
 
-            if (Schedules.find({event: Session.get("eventID")}).count < 1) { // if there isn't any schedule with the ID
-                Schedules.insert({ // create a new document
-                    event: Session.get("eventID"),
-                    sched: Session.get('table')
-                });
-            } else { // update an existing document.
-                Schedules.update({event: Session.get("eventID")}, {$set: Session.get('table')});
-            }
-
+            Meteor.call("updateSchedule", Session.get('table'), Session.get('eventID'));
 
             return false;
         }
@@ -137,8 +151,10 @@ if (Meteor.isServer) {
     Meteor.startup(function () {
     // code to run on server at startup
         Roles.addUsersToRoles("PvN4RH8zj6YtAZizX", ['admin']);
+        Roles.addUsersToRoles("dCddD28wbLyj5W2hr", ['queuer']);
     });
     Meteor.publish(null, function (){
         return Meteor.roles.find({})
     })
 }
+

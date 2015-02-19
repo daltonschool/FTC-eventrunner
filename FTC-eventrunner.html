@@ -46,6 +46,19 @@
 </body>
 
 
+<template name="followTeam">
+    <form class="newNumber">
+        <input type="number" name="team">
+        <input type="submit">
+    </form>
+</template>
+
+<template name="addQueuer">
+    {{#each users}}
+        <input type="checkbox" name="user" value="{{user}}">{{user}}<br>
+    {{/each}}
+</template>
+
 <template name="login">
     <form class="navbar-form navbar-right loginForm" role="form">
         <label style="color: red;">
@@ -62,7 +75,6 @@
     </form>
 </template>
 <template name="signup">
-    <!-- Signup modal -->
     <div class="modal fade signup" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -117,7 +129,12 @@
                 <center>{{element}}</center>
             </td>
             {{/each}}
-            {{#if isInRole 'admin' 'queuer'}}
+            {{#if isInRole 'admin'}}
+                <td>
+                    <button class="btn btn-default queuer" id="{{indx}}">Queue</button>
+                </td>
+            {{/if}}
+            {{#if isInRole 'queuer'}}
                 <td>
                     <button class="btn btn-default queuer" id="{{indx}}">Queue</button>
                 </td>
