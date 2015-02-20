@@ -7,11 +7,17 @@
 
 <body>
 
-<div class="navbar navbar-inverse" role="navigation">
+<div class="navbar navbar-default" role="navigation">
     <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
         <a class="navbar-brand" href="#">EventRunner</a>
     </div>
-    <div class="navbar-collapse collapse">
+    <div class="navbar-collapse collapse" id="nav">
         {{#if currentUser}}
         <div class="navbar-right">
             <ul class="nav navbar-nav">
@@ -45,6 +51,10 @@
             {{#if currentUser}}
                 {{> followTeam}}
             {{/if}}
+
+            {{#if isInRole 'admin'}}
+                {{> addQueuer}}
+            {{/if}}
         </div>
     </row>
 
@@ -57,15 +67,31 @@
     <form class="newNumber">
         <h3>Follow A Team</h3>
         <h6>Recieve SMS alerts when a team needs to queue, and the results of their matches.</h6>
-        <input type="tel" name="team">
+        <input placeholder="team #" name="team">
+        <input type="tel" placeholder="phone number" value="{{phoneNumber}}" name="number">
         <input type="submit" class="btn btn-primary btn-xs">
     </form>
+    <h5>Teams You're Following:</h5>
+    {{#each teamsFollowing}}
+        {{number}} <button class="btn btn-default btn-xs remove-team" id="{{number}}"><span class="glyphicon glyphicon-remove"></span></button>
+        <br>
+    {{/each}}
 </template>
 
 <template name="addQueuer">
-    {{#each users}}
-        <input type="checkbox" name="user" value="{{user}}">{{user}}<br>
+    <h5>Promote User to Queuer</h5>
+    <form>
+        <input type="text" placeholder="username" name="user" class="username">
+        <br>
+        <button class="btn btn-success btn-xs promote">Promote</button>
+        <button class="btn btn-danger btn-xs demote">Demote</button>
+    </form>
+    <h6>Current Queuers</h6>
+    {{#each queuers}}
+        {{username}}
+        <br>
     {{/each}}
+
 </template>
 
 <template name="login">
@@ -139,14 +165,9 @@
                 <center>{{element}}</center>
             </td>
             {{/each}}
-            {{#if isInRole 'admin'}}
-                <td>
-                    <button class="btn btn-default queuer" id="{{indx}}">Queue</button>
-                </td>
-            {{/if}}
             {{#if isInRole 'queuer'}}
                 <td>
-                    <button class="btn btn-default queuer" id="{{indx}}">Queue</button>
+                    <button class="btn btn-default btn-xs queuer" id="{{indx}}">Queue</button>
                 </td>
             {{/if}}
         </tr>
@@ -155,7 +176,8 @@
 </template>
 <template name="csvInput">
     <form class="new-task">
-        <textarea name="text"></textarea>
+        <h3>Enter Match Schedule</h3>
         <input type="submit" name="hi">
+        <textarea name="text"></textarea>
     </form>
 </template>

@@ -18,11 +18,75 @@ Meteor.methods({
                 });
             }
         }
+    },
+    makeQueuer: function(id) {
+        if (!Roles.userIsInRole(Meteor.userId(), ["admin"])) {
+            throw new Meteor.Error("not-authorized");
+        }
+        else {
+            Roles.addUsersToRoles(id, ["queuer"]);
+        }
+    },
+    demoteQueuer: function(id){
+        if (!Roles.userIsInRole(Meteor.userId(), ["admin"])) {
+            throw new Meteor.Error("not-authorized");
+        }
+        else {
+            Roles.removeUsersFromRoles(id, ["queuer"]);
+        }
+    },
+    followTeam: function(teamNum, userId) {
+        if (Teams.findOne({number: teamNum})) {
+            if (Teams.findOne({number: teamNum}).followers.indexOf(userId) < 0) {
+                Teams.update({number: teamNum}, {$push: {"followers": userId}});
+            }
+        }
+        else {
+            Teams.insert({
+                number: teamNum,
+                followers: [userId]
+            })
+        }
+    },
+    unfollowTeam: function(teamNum, userId) {
+        if (Teams.findOne({number: teamNum})) { // if the team exists
+            Teams.update({number: teamNum}, {$pull: {followers: userId}}); // pull the user from the followers array
+        }
+    },
+    textFollowers: function(d) {
+        var stuff = ['red1', 'red2', 'blue1', 'blue2'];
+        var ts = [];
+        var allFollowers = {};
+        var nums = {};
+        for (var i = 0; i < stuff.length; i++) {
+            var tid = d[stuff[i]];
+            allFollowers[tid] = [];
+            if (Teams.findOne({number: tid})) {
+                allFollowers[tid] = Teams.findOne({number: tid}).followers;
+            }
+        }
+        for (var t in allFollowers) {
+            var users = allFollowers[t];
+            nums[t] = [];
+            for (var i = 0; i < users.length; i++) {
+                var number = Meteor.users.findOne(users[i]).profile.number;
+                if (number) {
+                    nums[t].push(number);
+                }
+            }
+        }
+
+        console.log(nums);
+
     }
 });
 
 
 if (Meteor.isClient) {
+    Meteor.subscribe("schedules");
+    Meteor.subscribe("users");
+    Meteor.subscribe("teams");
+
     // counter starts at 0
     Session.setDefault('counter',0); // from the example
 
@@ -71,15 +135,38 @@ if (Meteor.isClient) {
             return false;
         }
     });
+
+    Template.followTeam.helpers({
+        phoneNumber: function() {
+            return Meteor.user().profile.number || '';
+        },
+        teamsFollowing: function() {
+            return Teams.find({followers: Meteor.userId()});
+        }
+    });
+
+    Template.followTeam.events({
+        'click button.remove-team': function(event) {
+            Meteor.call('unfollowTeam', event.currentTarget.id, Meteor.userId());
+        },
+        'submit .newNumber': function(event) {
+            event.preventDefault();
+
+            var phoneNumber = event.target.number.value;
+            var team = event.target.team.value;
+
+            Meteor.users.update(Meteor.userId(), {$set: {'profile.number': phoneNumber}});
+
+            Meteor.call('followTeam', team, Meteor.userId());
+
+            return false;
+        }
+    });
+
     Template.signup.helpers({
         "warnings": function() {
             return Session.get("warnings") || "";
         }
-    });
-
-
-    Template.body.helpers({
-
     });
 
     Template.tbl.helpers({
@@ -115,7 +202,45 @@ if (Meteor.isClient) {
 
             var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
 
-            alert(JSON.stringify(d));
+            Meteor.call('textFollowers', d);
+        }
+    });
+
+    Template.addQueuer.events({
+        'click .promote': function(event) {
+            event.preventDefault();
+            var u  = $(event.currentTarget).parent().children("input").val();
+            var o = Meteor.users.findOne({'username': u});
+            if (o) {
+                Meteor.call("makeQueuer", o._id);
+            }
+            else {
+                console.log("not a valid user.");
+            }
+            return false;
+        },
+        'click .demote': function(event) {
+            event.preventDefault();
+            var u  = $(event.currentTarget).parent().children("input").val();
+            var o = Meteor.users.findOne({'username': u});
+            if (o) {
+                console.log(o.username);
+                console.log(o._id);
+                Meteor.call("demoteQueuer", o._id);
+            }
+            else {
+                console.log("not a valid user.");
+            }
+            return false;
+        }
+    });
+
+    Template.addQueuer.helpers({
+        "users": function() {
+            return Meteor.users.find({}).fetch();
+        },
+        "queuers": function() {
+            return Roles.getUsersInRole('queuer');
         }
     });
 
@@ -153,8 +278,23 @@ if (Meteor.isServer) {
         Roles.addUsersToRoles("PvN4RH8zj6YtAZizX", ['admin']);
         Roles.addUsersToRoles("dCddD28wbLyj5W2hr", ['queuer']);
     });
-    Meteor.publish(null, function (){
-        return Meteor.roles.find({})
+
+    Meteor.publish("schedules", function() {
+        return Schedules.find();
+    });
+
+    Meteor.publish("users", function () {
+        return Meteor.users.find();
+    });
+
+    Meteor.publish("teams", function() {
+        return Teams.find();
     })
+
+    Meteor.publish(null, function (){
+        return Meteor.roles.find({});
+    });
+
+
 }
 
