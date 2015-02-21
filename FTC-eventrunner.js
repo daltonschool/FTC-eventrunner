@@ -1,7 +1,6 @@
 Schedules = new Mongo.Collection("schedules");
 Teams = new Mongo.Collection('teams');
 
-
 Meteor.methods({
     updateSchedule: function(obj, id) {
         if (!Roles.userIsInRole(Meteor.userId(), ["admin"])) {
@@ -53,7 +52,7 @@ Meteor.methods({
             Teams.update({number: teamNum}, {$pull: {followers: userId}}); // pull the user from the followers array
         }
     },
-    textFollowers: function(d) {
+    textFollowers: function(d, roundNum) {
         var stuff = ['red1', 'red2', 'blue1', 'blue2'];
         var ts = [];
         var allFollowers = {};
@@ -73,6 +72,18 @@ Meteor.methods({
                 if (number) {
                     nums[t].push(number);
                 }
+            }
+        }
+
+
+        for (var tm in nums) {
+            var toText = nums[tm];
+            for (var i = 0; i < toText.length; i++) {
+                twilio.sendSms({
+                    to: toText[i],
+                    from: "+12018856228",
+                    body: "Hello! Your team #"+tm+" is ready to queue on field " + (roundNum % 2 == 0 ? "2" : "1")+"."
+                });
             }
         }
 
@@ -202,7 +213,7 @@ if (Meteor.isClient) {
 
             var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
 
-            Meteor.call('textFollowers', d);
+            Meteor.call('textFollowers', d, indx+1);
         }
     });
 
