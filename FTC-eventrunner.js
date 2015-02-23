@@ -1,6 +1,7 @@
 Schedules = new Mongo.Collection("schedules");
 Teams = new Mongo.Collection('teams');
 
+
 Meteor.methods({
     updateSchedule: function(obj, id) {
         if (!Roles.userIsInRole(Meteor.userId(), ["admin"])) {
@@ -75,19 +76,24 @@ Meteor.methods({
             }
         }
 
-
         for (var tm in nums) {
             var toText = nums[tm];
             for (var i = 0; i < toText.length; i++) {
-                twilio.sendSms({
-                    to: toText[i],
-                    from: "+12018856228",
-                    body: "Hello! Your team #"+tm+" is ready to queue on field " + (roundNum % 2 == 0 ? "2" : "1")+"."
+                HTTP.post("https://api.twilio.com/2010-04-01/Accounts/"+twilioKey.sid+"/Messages.json",{
+                    params: {
+                        From: "+12018856228",
+                        To: toText[i],
+                        Body: "Hello! Your team #"+tm+" is ready to queue on field " + (roundNum % 2 == 0 ? "2" : "1")+" for round #"+roundNum+"."
+                    },
+                    auth: twilioKey.sid +":"+ twilioKey.token
                 });
             }
         }
 
         console.log(nums);
+
+    },
+    "testAJAX": function() {
 
     }
 });
@@ -213,7 +219,7 @@ if (Meteor.isClient) {
 
             var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
 
-            Meteor.call('textFollowers', d, indx+1);
+            Meteor.call('textFollowers', d, parseInt(indx)+1);
         }
     });
 
@@ -286,7 +292,7 @@ function parseCSV(s) {
 if (Meteor.isServer) {
     Meteor.startup(function () {
     // code to run on server at startup
-        Roles.addUsersToRoles("PvN4RH8zj6YtAZizX", ['admin']);
+        Roles.addUsersToRoles("tvK9jubLFHwnvCTK2", ['admin']);
         Roles.addUsersToRoles("dCddD28wbLyj5W2hr", ['queuer']);
     });
 
@@ -305,7 +311,5 @@ if (Meteor.isServer) {
     Meteor.publish(null, function (){
         return Meteor.roles.find({});
     });
-
-
 }
 

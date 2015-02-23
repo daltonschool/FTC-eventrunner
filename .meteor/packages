@@ -9,4 +9,5 @@ accounts-ui
 accounts-password
 twbs:bootstrap
 alanning:roles
-mrt:twilio-meteor
+http
+accolver:twilio-meteor
