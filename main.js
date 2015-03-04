@@ -8,60 +8,17 @@ if (Meteor.isClient) {
 
     // counter starts at 0
     Session.setDefault('counter',0); // from the example
-
     Session.setDefault('table', null); // This variable holds the table once the data's entered.
     Session.setDefault('labels', ['Number', 'RED 1', 'RED 2', 'BLUE 1', 'BLUE 2']); // Headers I want shown. Can be changed.
     Session.setDefault('eventID', "1"); // This will be variable for multiple events eventually, but now we're only doing one event.
 
-    Template.login.events({
-        "submit .loginForm": function(event) { // custom login form
-            var username = event.target.username.value;
-            var password = event.target.password.value;
-            Meteor.loginWithPassword(username, password, function(error) {
-                if (error) {
-                    Session.set("warnings", "Invalid Username or Password.");
-                } else {
-                    Session.set("warnings", "");
-                }
-            });
-            return false;
-        }
-    });
-    Template.login.helpers({ // error label for login/signup
-        "warnings": function() {
-            return Session.get("warnings") || "";
-        }
-    });
-
-    Template.signup.events({
-        "submit #register-form": function(event) {
-            var username = event.target.signupName.value;
-            var password = event.target.signupPass.value;
-            var confirm  = event.target.signupConf.value;
-
-            if (password === confirm) { // if they typed the password correctly twice
-                Accounts.createUser({username: username, password: password}, function(err) {
-                    if (err) {
-                        Session.set("warnings", "user already exists.")
-                    } else {
-                        $('.signup').modal('hide');
-                    }
-                })
-            } else {
-                Session.set("warnings", "you did not confirm your password.");
-            }
-
-            return false;
-        }
-    });
-
     Template.followTeam.helpers({
-        phoneNumber: function() {
-            return Meteor.user().profile.number || '';
-        },
-        teamsFollowing: function() {
-            return Teams.find({followers: Meteor.userId()});
-        }
+      phoneNumber: function() {
+        return Meteor.user().profile.number || '';
+      },
+      teamsFollowing: function() {
+        return Teams.find({followers: Meteor.userId()});
+      }
     });
 
     Template.followTeam.events({
