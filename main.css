@@ -3,3 +3,10 @@ textarea {
     width: 100%;
     height: 200px;
 }
+
+tr.blueWin > td {
+    background-color: #6495ed;
+}
+tr.redWin > td {
+    background-color: #dc143c;
+}
