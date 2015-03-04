@@ -55,99 +55,9 @@
             {{/if}}
         </div>
     </row>
-
-
     {{> signup}}
 </body>
 
-
-<template name="followTeam">
-    <form class="newNumber">
-        <h3>Follow A Team</h3>
-        <h6>Recieve SMS alerts when a team needs to queue, and the results of their matches.</h6>
-        <input placeholder="team #" name="team">
-        <input type="tel" placeholder="phone number" value="{{phoneNumber}}" name="number">
-        <input type="submit" class="btn btn-primary btn-xs">
-    </form>
-    <h5>Teams You're Following:</h5>
-    {{#each teamsFollowing}}
-        {{number}} <button class="btn btn-default btn-xs remove-team" id="{{number}}"><span class="glyphicon glyphicon-remove"></span></button>
-        <br>
-    {{/each}}
-</template>
-
-<template name="addQueuer">
-    <h5>Promote User to Queuer</h5>
-    <form>
-        <input type="text" placeholder="username" name="user" class="username">
-        <br>
-        <button class="btn btn-success btn-xs promote">Promote</button>
-        <button class="btn btn-danger btn-xs demote">Demote</button>
-    </form>
-    <h6>Current Queuers</h6>
-    {{#each queuers}}
-        {{username}}
-        <br>
-    {{/each}}
-
-</template>
-
-<template name="login">
-    <form class="navbar-form navbar-right loginForm" role="form">
-        <label style="color: red;">
-            {{warnings}}
-        </label>
-        <div class="form-group">
-            <input type="text" placeholder="Username" name="username" class="form-control">
-        </div>
-        <div class="form-group">
-            <input type="password" placeholder="Password" name="password" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success">Sign in</button>
-        <a class="btn btn-warning" onclick="Session.set('warnings', ''); $('.signup').modal();">Sign up</a>
-    </form>
-</template>
-<template name="signup">
-    <div class="modal fade signup" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Sign Up</h4>
-                </div>
-                <div class="modal-body">
-                    <center>
-                        <form id="register-form" action="action">
-                            <div>
-                                <label>
-                                    Desired Username
-                                </label>
-                                <br>
-                                <input type="username" name="signupName" />
-                                <br>
-                                <label>
-                                    Password
-                                </label>
-                                <br>
-                                <input type="password" name="signupPass" />
-                                <br>
-                                <label>
-                                    Confirm Password
-                                </label>
-                                <br>
-                                <input type="password" name="signupConf" />
-                                <br>
-                                {{warnings}}
-                                <br>
-                                <input type="submit" class="btn btn-success" id="create-account" value="Create an Account" />
-                            </div>
-                        </form>
-                    </center>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
 <template name="tbl">
     <center><h3>Match Schedule</h3></center>
     <table class="table table-striped">
@@ -174,13 +84,5 @@
                 </tr>
             {{/each}}
         </tbody>
-
     </table>
-</template>
-<template name="csvInput">
-    <form class="new-task">
-        <h3>Enter Match Schedule</h3>
-        <input type="submit" name="hi">
-        <textarea name="text"></textarea>
-    </form>
 </template>
