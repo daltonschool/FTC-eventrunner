@@ -38,3 +38,16 @@ Template.addQueuer.helpers({
     return Roles.getUsersInRole('queuer');
   }
 });
+
+Template.csvInput.events({
+  'submit .new-task': function(event) {
+    var text = event.target.text.value;
+    console.log("click!");
+    event.preventDefault();
+    Session.set('table', parseCSV(text)); // parse
+
+    Meteor.call("updateSchedule", Session.get('table'), Session.get('eventID'));
+
+    return false;
+  }
+});
