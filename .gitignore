@@ -2,4 +2,4 @@
 .idea/
 .meteor/local
 public/node-modules
-lib/twilio.js
+server/lib/twilio.js
