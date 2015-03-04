@@ -44,5 +44,11 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.signup.helpers({
+    "warnings": function() {
+      return Session.get("warnings") || "";
+    }
+  });
+
 
 }
