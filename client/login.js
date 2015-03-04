@@ -49,6 +49,4 @@ if (Meteor.isClient) {
       return Session.get("warnings") || "";
     }
   });
-
-
 }

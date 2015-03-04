@@ -12,35 +12,6 @@ if (Meteor.isClient) {
     Session.setDefault('labels', ['Number', 'RED 1', 'RED 2', 'BLUE 1', 'BLUE 2']); // Headers I want shown. Can be changed.
     Session.setDefault('eventID', "1"); // This will be variable for multiple events eventually, but now we're only doing one event.
 
-    Template.followTeam.helpers({
-      phoneNumber: function() {
-        return Meteor.user().profile.number || '';
-      },
-      teamsFollowing: function() {
-        return Teams.find({followers: Meteor.userId()});
-      }
-    });
-
-    Template.followTeam.events({
-        'click button.remove-team': function(event) {
-            Meteor.call('unfollowTeam', event.currentTarget.id, Meteor.userId());
-        },
-        'submit .newNumber': function(event) {
-            event.preventDefault();
-
-            var phoneNumber = event.target.number.value;
-            var team = event.target.team.value;
-
-            Meteor.users.update(Meteor.userId(), {$set: {'profile.number': phoneNumber}});
-
-            Meteor.call('followTeam', team, Meteor.userId());
-
-            return false;
-        }
-    });
-
-
-
     Template.tbl.helpers({
         // renders the labels for the match table
         labels: function() {
@@ -75,44 +46,6 @@ if (Meteor.isClient) {
             var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
 
             Meteor.call('textFollowers', d, parseInt(indx)+1);
-        }
-    });
-
-    Template.addQueuer.events({
-        'click .promote': function(event) {
-            event.preventDefault();
-            var u  = $(event.currentTarget).parent().children("input").val();
-            var o = Meteor.users.findOne({'username': u});
-            if (o) {
-                Meteor.call("makeQueuer", o._id);
-            }
-            else {
-                console.log("not a valid user.");
-            }
-            return false;
-        },
-        'click .demote': function(event) {
-            event.preventDefault();
-            var u  = $(event.currentTarget).parent().children("input").val();
-            var o = Meteor.users.findOne({'username': u});
-            if (o) {
-                console.log(o.username);
-                console.log(o._id);
-                Meteor.call("demoteQueuer", o._id);
-            }
-            else {
-                console.log("not a valid user.");
-            }
-            return false;
-        }
-    });
-
-    Template.addQueuer.helpers({
-        "users": function() {
-            return Meteor.users.find({}).fetch();
-        },
-        "queuers": function() {
-            return Roles.getUsersInRole('queuer');
         }
     });
 
@@ -161,7 +94,7 @@ if (Meteor.isServer) {
 
     Meteor.publish("teams", function() {
         return Teams.find();
-    })
+    });
 
     Meteor.publish(null, function (){
         return Meteor.roles.find({});
