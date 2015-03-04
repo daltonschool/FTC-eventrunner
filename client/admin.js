@@ -44,9 +44,7 @@ Template.csvInput.events({
     var text = event.target.text.value;
     console.log("click!");
     event.preventDefault();
-    Session.set('table', parseCSV(text)); // parse
-
-    Meteor.call("updateSchedule", Session.get('table'), Session.get('eventID'));
+    Meteor.call("updateSchedule", parseCSV(text), Session.get('eventID'));
 
     return false;
   }
