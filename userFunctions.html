@@ -1,0 +1,14 @@
+<template name="followTeam">
+    <form class="newNumber">
+        <h3>Follow A Team</h3>
+        <h6>Recieve SMS alerts when a team needs to queue, and the results of their matches.</h6>
+        <input placeholder="team #" name="team">
+        <input type="tel" placeholder="phone number" value="{{phoneNumber}}" name="number">
+        <input type="submit" class="btn btn-primary btn-xs">
+    </form>
+    <h5>Teams You're Following:</h5>
+    {{#each teamsFollowing}}
+        {{number}} <button class="btn btn-default btn-xs remove-team" id="{{number}}"><span class="glyphicon glyphicon-remove"></span></button>
+        <br>
+    {{/each}}
+</template>

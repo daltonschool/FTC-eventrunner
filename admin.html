@@ -1,0 +1,23 @@
+<template name="addQueuer">
+    <h5>Promote User to Queuer</h5>
+    <form>
+        <input type="text" placeholder="username" name="user" class="username">
+        <br>
+        <button class="btn btn-success btn-xs promote">Promote</button>
+        <button class="btn btn-danger btn-xs demote">Demote</button>
+    </form>
+    <h6>Current Queuers</h6>
+    {{#each queuers}}
+        {{username}}
+        <br>
+    {{/each}}
+
+</template>
+
+<template name="csvInput">
+    <form class="new-task">
+        <h3>Enter Match Schedule</h3>
+        <input type="submit" name="hi">
+        <textarea name="text"></textarea>
+    </form>
+</template>
