@@ -50,46 +50,26 @@ Meteor.methods({
     }
   },
   textFollowers: function(d, roundNum) {
-    var stuff = ['red1', 'red2', 'blue1', 'blue2'];
-    var ts = [];
-    var allFollowers = {};
-    var nums = {};
-    for (var i = 0; i < stuff.length; i++) {
-      var tid = d[stuff[i]];
-      allFollowers[tid] = [];
-      if (Teams.findOne({number: tid})) {
-        allFollowers[tid] = Teams.findOne({number: tid}).followers;
-      }
-    }
-    for (var t in allFollowers) {
-      var users = allFollowers[t];
-      nums[t] = [];
-      for (var i = 0; i < users.length; i++) {
-        var number = Meteor.users.findOne(users[i]).profile.number;
-        if (number) {
-          nums[t].push(number);
+    var labels = ['red1', 'red2', 'blue1', 'blue2'];
+    for (var i = 0; i < labels.length; i++) {
+      var tid = d[labels[i]]; // the team number for one of the teams in the match.
+      if (Teams.findOne({number: tid})) { // if the team exists in the database
+        var users = Teams.findOne({number: tid}).followers; // get the array of their followers
+        for (var i = 0; i < users.length; i++) { // loop thru their followers
+          var number = Meteor.users.findOne(users[i]).profile.number;
+          if (number) { // if they have a phone number, send them a text.
+            HTTP.post("https://api.twilio.com/2010-04-01/Accounts/"+twilioKey.sid+"/Messages.json",{
+              params: {
+                From: "+12018856228",
+                To: number,
+                Body: "Hello! Your team #"+tm+" is ready to queue on field " + (roundNum % 2 == 0 ? "2" : "1")+" for round #"+roundNum+"."
+                // TODO: Have a variable number of fields (1,2,3 etc).
+              },
+              auth: twilioKey.sid +":"+ twilioKey.token
+            });
+          }
         }
       }
     }
-
-    for (var tm in nums) {
-      var toText = nums[tm];
-      for (var i = 0; i < toText.length; i++) {
-        HTTP.post("https://api.twilio.com/2010-04-01/Accounts/"+twilioKey.sid+"/Messages.json",{
-          params: {
-            From: "+12018856228",
-            To: toText[i],
-            Body: "Hello! Your team #"+tm+" is ready to queue on field " + (roundNum % 2 == 0 ? "2" : "1")+" for round #"+roundNum+"."
-          },
-          auth: twilioKey.sid +":"+ twilioKey.token
-        });
-      }
-    }
-
-    console.log(nums);
-
-  },
-  "testAJAX": function() {
-
   }
 });
