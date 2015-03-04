@@ -151,25 +151,30 @@
 <template name="tbl">
     <center><h3>Match Schedule</h3></center>
     <table class="table table-striped">
-        <tr>
-            {{#each labels}}
-            <td><center>{{label}}</center></td>
+        <thead>
+            <tr>
+                {{#each labels}}
+                    <th>{{label}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each rows}}
+                <tr>
+                    {{#each elements}}
+                        <td>
+                            {{element}}
+                        </td>
+                    {{/each}}
+                    {{#if isInRole 'queuer'}}
+                        <td>
+                            <button class="btn btn-default btn-sm queuer" id="{{indx}}">Queue</button>
+                        </td>
+                    {{/if}}
+                </tr>
             {{/each}}
-        </tr>
-        {{#each rows}}
-        <tr>
-            {{#each elements}}
-            <td>
-                <center>{{element}}</center>
-            </td>
-            {{/each}}
-            {{#if isInRole 'queuer'}}
-                <td>
-                    <button class="btn btn-default btn-xs queuer" id="{{indx}}">Queue</button>
-                </td>
-            {{/if}}
-        </tr>
-        {{/each}}
+        </tbody>
+
     </table>
 </template>
 <template name="csvInput">
