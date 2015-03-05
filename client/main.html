@@ -34,7 +34,7 @@
     </div>
 </div>
 
-    <center><h1>Welcome to the Dalton Qualifier! </h1></center>
+    <center><h1>Welcome to EventRunner! </h1></center>
 
     <row>
         <div class="col-sm-3">
@@ -43,7 +43,11 @@
             {{/if}}
         </div>
         <div class="col-sm-6">
-            {{> tbl}}
+            {{#if getEvent}}
+                {{> tbl}}
+            {{else}}
+                {{> eventSelector}}
+            {{/if}}
         </div>
         <div class="col-sm-3">
             {{#if currentUser}}
