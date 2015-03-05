@@ -4,11 +4,11 @@ Meteor.methods({
       throw new Meteor.Error("not-authorized");
     }
     else {
-      if (Schedules.findOne({event: id})) { // if a schedule exists, update it.
-        Schedules.update({event: id}, {$set: {'sched': obj}});
+      if (Events.findOne({event: id})) { // if a schedule exists, update it.
+        Events.update({event: id}, {$set: {'sched': obj}});
       }
       else {
-        Schedules.insert({ // create a new document
+        Events.insert({ // create a new document
           event: id,
           sched: obj
         });

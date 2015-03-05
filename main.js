@@ -1,8 +1,7 @@
-Schedules = new Mongo.Collection("schedules");
+//Schedules = new Mongo.Collection("schedules");
 Teams = new Mongo.Collection('teams');
 Events = new Mongo.Collection('events');
 if (Meteor.isClient) {
-  Meteor.subscribe("schedules");
   Meteor.subscribe("users");
   Meteor.subscribe("teams");
   Meteor.subscribe("events");
@@ -19,9 +18,6 @@ if (Meteor.isServer) {
     Roles.addUsersToRoles("dCddD28wbLyj5W2hr", ['queuer']);
   });
 
-  Meteor.publish("schedules", function() {
-    return Schedules.find();
-  });
   Meteor.publish("schedules", function() {
     return Events.find();
   });

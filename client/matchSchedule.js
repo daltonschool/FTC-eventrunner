@@ -13,7 +13,7 @@ Template.tbl.helpers({
   },
   // renders rows for the match table
   rows: function() {
-    var d = Schedules.findOne({event: Session.get("eventID")}).sched;
+    var d = Events.findOne({event: Session.get("eventID")}).sched;
     var labels = Session.get('labels');
     var rows = [];
     for(var i = 0; i < d['Number'].length; i++) {
@@ -30,7 +30,7 @@ Template.tbl.helpers({
 Template.tbl.events({
   "click .queuer": function(event) {
     var indx = event.target.id;
-    var row = Schedules.findOne({event: Session.get("eventID")}).sched;
+    var row = Events.findOne({event: Session.get("eventID")}).sched;
 
     var d = {red1: row["RED 1"][indx], red2: row["RED 2"][indx], blue1: row["BLUE 1"][indx], blue2: row["BLUE 2"][indx]};
 
